@@ -1,0 +1,30 @@
+.fondo {
+    background-image: url("../img/utec-edificio.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.container-login {
+    margin: 10px;
+}
+
+.login {
+    width: 400px;
+}
+
+.form-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 10px;
+    width: 350px;
+    display: block;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    background-color: #f5f5f5;
+}
+
+.center-button {
+    text-align: center;
+}

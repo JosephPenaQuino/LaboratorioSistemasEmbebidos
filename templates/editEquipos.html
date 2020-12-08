@@ -1,0 +1,40 @@
+{% extends 'layout_admin.html' %} {% block body %}
+
+<h1>EDIT</h1>
+
+<div class="col-md-4 offset-md-4">
+    <div class="card card-body">
+        <form action="/updateEquipo/{{equipos.0}}" , method="post">
+
+
+            <div class="form-group">
+                <label for="nombre">Nombre</label>
+                <input type="text" class="form-control" name="nombre" value="{{equipos.1}}">
+                <small id="emailHelp" class="form-text text-muted">Nombre</small>
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripción</label>
+                <input type="text" class="form-control" name="descripcion" value="{{equipos.2}}">
+                <small id="emailHelp" class="form-text text-muted">Descripción</small>
+            </div>
+
+
+            <div class="form-group">
+                <label for="stock">Stock</label>
+                <input type="number" class="form-control" name="stock" value="{{equipos.3}}">
+                <small id="emailHelp" class="form-text text-muted">Stock</small>
+            </div>
+
+            <div class="form-group">
+                <label for="imagen">Imagen</label>
+                <input type="text" class="form-control" name="imagen" value="{{equipos.4}}">
+                <small id="emailHelp" class="form-text text-muted">Imagen</small>
+            </div>
+
+            <button type="submit" class="btn btn-success btn-block">Save</button>
+
+        </form>
+    </div>
+</div>
+{% endblock %}

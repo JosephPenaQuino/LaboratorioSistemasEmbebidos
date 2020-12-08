@@ -1,0 +1,84 @@
+{% extends 'layout_admin.html' %} {% block body %}
+
+<h1>Esta es la pestaña de admin</h1>
+
+<div class="row">
+
+    <div class="col-md-3">
+        <div class="card card-body">
+            <form action="/add_usuario" , method="post">
+
+                <div class="form-group">
+                    <label for="usuario">Usuario</label>
+                    <input type="text" class="form-control" name="usuario" placeholder="Usuario">
+                    <small id="emailHelp" class="form-text text-muted">Usuario</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="contraseña">Contraseña</label>
+                    <input type="password" class="form-control" name="contraseña" placeholder="Contraseña">
+                    <small id="emailHelp" class="form-text text-muted">Contraseña</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" class="form-control" name="nombre" placeholder="Nombre">
+                    <small id="emailHelp" class="form-text text-muted">Nombre</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="apellido">Apellido</label>
+                    <input type="text" class="form-control" name="apellido" placeholder="Apellido">
+                    <small id="emailHelp" class="form-text text-muted">Apellido</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="edad">Edad</label>
+                    <input type="number" class="form-control" name="edad" placeholder="Edad">
+                    <small id="emailHelp" class="form-text text-muted">Edad</small>
+                </div>
+
+                <label for="edad">Rol</label>
+                <select class="custom-select my-1 mr-sm-2" name="rol" id="inlineFormCustomSelectPref">
+                    <option selected>Elige...</option>
+                    <option value="admin">Administrador</option>
+                    <option value="estudiante">Estudiante</option>
+                </select>
+
+                <button type="submit" class="btn btn-success btn-block">Save</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <table class="table table-striped table-bordered bg-white table-sm table-hover">
+            <thead>
+                <td>Usuario</td>
+                <td>Contraseña</td>
+                <td>Nombre</td>
+                <td>Apellido</td>
+                <td>Edad</td>
+                <td>Rol</td>
+                <td>Acción</td>
+            </thead>
+            <tbody>
+                {% for c in usuarios %}
+                <tr>
+                    <td>{{c.1}}</td>
+                    <td>{{c.2}}</td>
+                    <td>{{c.3}}</td>
+                    <td>{{c.4}}</td>
+                    <td>{{c.5}}</td>
+                    <td>{{c.6}}</td>
+                    <td>
+                        <a href="/editUser/{{c.0}}" class="btn btn-secondary">Editar</a>
+                        <a href="/deleteUser/{{c.0}}" class="btn btn-danger btn-delete">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

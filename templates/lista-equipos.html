@@ -1,0 +1,72 @@
+{% extends 'layout_admin.html' %} {% block body %}
+
+<h1>Esta es la pestaña de equipos</h1>
+
+<hr>
+
+<div class="row">
+
+    <div class="col-md-4">
+        <div class="card card-body">
+            <form action="/add_equipo" , method="post">
+
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" class="form-control" name="nombre" placeholder="Nombre">
+                    <small id="emailHelp" class="form-text text-muted">Nombre</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcion">Descripción</label>
+                    <input type="text" class="form-control" name="descripcion" placeholder="descripcion">
+                    <small id="emailHelp" class="form-text text-muted">Descripción</small>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="stock">Stock</label>
+                    <input type="number" class="form-control" name="stock" placeholder="Stock">
+                    <small id="emailHelp" class="form-text text-muted">Stock</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="imagen">Imagen</label>
+                    <input type="text" class="form-control" name="imagen" placeholder="Imagen">
+                    <small id="emailHelp" class="form-text text-muted">Imagen</small>
+                </div>
+
+                <button type="submit" class="btn btn-success btn-block">Save</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <table class="table table-striped table-bordered bg-white table-sm table-hover">
+            <thead>
+                <td>Nombre</td>
+                <td>Descripción</td>
+                <td>Stock</td>
+                <td>Imagen</td>
+                <td>Acciones</td>
+            </thead>
+            <tbody>
+                {% for c in equipos %}
+                <tr>
+                    <td>{{c.1}}</td>
+                    <td style="width: 300px;">{{c.2}}</td>
+                    <td>{{c.3}}</td>
+                    <td><img src="{{c.4}}" style="width: 100px;"></td>
+                    <td>
+                        <a href="/editEquipos/{{c.0}}" class="btn btn-secondary">Editar</a>
+                        <a href="/deleteEquipos/{{c.0}}" class="btn btn-danger btn-delete">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+
+{% endblock %}
