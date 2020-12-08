@@ -84,11 +84,16 @@ def add_usuario():
         password = request.form['contraseña']
         nom = request.form['nombre']
         apell = request.form['apellido']
-        edad = request.form['edad']
-        rol = request.form['rol']
-        print(user,password,nom,apell,edad,rol)
+        telefono = request.form['telefono']
+        admin = 1
+        if request.form['rol'] == "estudiante":
+           admin = 0 
+        email = f'{user}@utec.edu.pe'
+        print(user,password,nom,apell,admin)
         cur = mysql.connection.cursor()
-        cur.execute('insert usuarios(username,password,nombre,apellido,edad,rol) values(%s,%s,%s,%s,%s,%s)',(user,password,nom,apell,edad,rol))
+        cur.execute('insert usuarios(username,codigo,nombre,apellido,admin,email, telefono) values(%s,%s,%s,%s,%s, %s,%s)',(user,password,nom,apell,admin, email, telefono))
+
+
         mysql.connection.commit()
         flash('Usuario actualizado correctamente')
         return redirect(url_for('usuarios'))
@@ -116,11 +121,18 @@ def update_usuario(id):
         password = request.form['contraseña']
         nom = request.form['nombre']
         apell = request.form['apellido']
-        edad = request.form['edad']
-        rol = request.form['rol']
+        telefono = request.form['telefono']
+        admin = request.form['rol']
         cur = mysql.connection.cursor()
-        cur.execute(""" update usuarios 
-                        set username = %s,password = %s,nombre = %s,apellido = %s,edad = %s,rol = %s where id = %s """,(user,password,nom,apell,edad,rol,id))
+        cur.execute((" update usuarios" 
+                    "set username = %s,"
+                    "codigo = %s,"
+                    "nombre = %s,"
+                    "apellido = %s,"
+                    "telefono = %s,"
+                    "admin = %s"
+                    " where id = %s ")
+                    ,(user, password, nom, apell, telefono, admin, id))
         mysql.connection.commit()
         flash('Contacto actualizado correctamente')
         return redirect(url_for('usuarios'))
@@ -142,10 +154,11 @@ def add_equipo():
         nom = request.form['nombre']
         desc = request.form['descripcion']
         stock = request.form['stock']
+        total = stock
         img = request.form['imagen']
         print(nom,desc,stock,img)
         cur = mysql.connection.cursor()
-        cur.execute('insert componente(nombre,descripcion,stock,imagen) values(%s,%s,%s,%s)',(nom,desc,stock,img))
+        cur.execute('insert componente(nombre,description,stock,image_url, total) values(%s,%s,%s,%s,%s)',(nom,desc,stock,img,total))
         mysql.connection.commit()
         flash('Usuario actualizado correctamente')
         return redirect(url_for('listadoEquipos'))
@@ -154,7 +167,7 @@ def add_equipo():
 @app.route('/editEquipos/<id>')
 def edit_equipos(id):
     cursor = mysql.connection.cursor()
-    cursor.execute('select * from equipos where id = %s', {id})
+    cursor.execute('select * from componente where id = %s', {id})
     data = cursor.fetchall()
     return render_template('editEquipos.html', equipos=data[0])
 
@@ -174,8 +187,12 @@ def update_equipos(id):
         stock = request.form['stock']
         img = request.form['imagen']
         cur = mysql.connection.cursor()
-        cur.execute(""" update equipos 
-                        set nombre = %s,descripcion = %s,stock = %s,imagen = %s where id = %s """,(nom,desc,stock,img,id))
+        cur.execute((" update componente "
+                    "set nombre = %s,"
+                    "description = %s,"
+                    "stock = %s,"
+                    "image_url = %s "
+                    "where id = %s "),(nom,desc,stock,img,id))
         mysql.connection.commit()
         flash('Contacto actualizado correctamente')
         return redirect(url_for('listadoEquipos'))

@@ -45,6 +45,8 @@
             <thead>
                 <td>Nombre</td>
                 <td>Descripción</td>
+                <td>Marca</td>
+                <td>Modelo</td>
                 <td>Stock</td>
                 <td>Imagen</td>
                 <td>Acciones</td>
@@ -53,9 +55,11 @@
                 {% for c in equipos %}
                 <tr>
                     <td>{{c.1}}</td>
-                    <td style="width: 300px;">{{c.2}}</td>
+                    <td style="width: 300px;">{{c.7}}</td>
+                    <td>{{c.2}}</td>
                     <td>{{c.3}}</td>
-                    <td><img src="{{c.4}}" style="width: 100px;"></td>
+                    <td>{{c.4}}</td>
+                    <td><img src="{{c.6}}" style="width: 100px;"></td>
                     <td>
                         <a href="/editEquipos/{{c.0}}" class="btn btn-secondary">Editar</a>
                         <a href="/deleteEquipos/{{c.0}}" class="btn btn-danger btn-delete">Eliminar</a>
