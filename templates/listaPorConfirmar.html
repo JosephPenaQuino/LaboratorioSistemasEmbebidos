@@ -1,6 +1,6 @@
-{% extends 'layout.html' %} {% block body %}
+{% extends 'layout_admin.html' %} {% block body %}
 
-<h1>Estos son tus prestamos</h1>
+<h1>Estos son los prestamos que debes confirmar</h1>
 
 <div class="row">
     <div class="col-md-9">
@@ -16,7 +16,7 @@
 				<td>Opción</td>
             </thead>
             <tbody>
-                {% for c in prestamo_componente %}
+                {% for c in prestamo_por_confirmar %}
                 <tr>
                     <td>{{c.1}}</td>
                     <td>{{c.2}}</td>
@@ -26,7 +26,8 @@
                     <td>{{c.6}}</td>
                     <td><img src="{{c.7}}" style="width: 100px;"></td>
                     <td>
-                        <a href="/devolverComponente/{{c.0}}" class="btn btn-secondary">Devolver</a>
+                        <a href="/confirmarDevolucion/{{c.0}}" class="btn btn-secondary">Confirmar</a>
+                        <a href="/negarDevolucion/{{c.0}}" class="btn btn-secondary">Negar</a>
                     </td>
                 </tr>
                 {% endfor %}

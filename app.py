@@ -265,8 +265,39 @@ def addToCart(id):
 def usuario_lista_prestamos(userId):
     db = DAOPrestamo()
     data = db.read(userId)
+    print("======================================")
+    print("Data: ")
+    print(data)
     return render_template('usuarioListaPrestamos.html', prestamo_componente=data)
 
+@app.route('/devolverComponente/<prestamoId>')
+def devolverComponente(prestamoId):
+    db = DAOPrestamo()
+    db.returnComponent(prestamoId)
+    userId = db.getUserId(prestamoId)
+    #data = db.read(userId)
+    #return render_template('usuarioListaPrestamos.html', prestamo_componente=data)
+    return usuario_lista_prestamos(userId)
+
+@app.route('/lista-porConfirmar')
+def admin_lista_prestamosConfirmar():
+    db = DAOPrestamo()
+    data = db.getPrestamosPorConfirmar()
+    return render_template('listaPorConfirmar.html', prestamo_por_confirmar=data)
+
+@app.route('/confirmarDevolucion/<prestamoId>')
+def confirmar_devolucion(prestamoId):
+    db = DAOPrestamo()
+    db.confirmarDevolucion(prestamoId)
+    data = db.getPrestamosPorConfirmar()
+    return render_template('listaPorConfirmar.html', prestamo_por_confirmar=data)
+
+@app.route('/negarDevolucion/<prestamoId>')
+def negar_devolucion(prestamoId):
+    db = DAOPrestamo()
+    db.negarDevolucion(prestamoId)
+    data = db.getPrestamosPorConfirmar()
+    return render_template('listaPorConfirmar.html', prestamo_por_confirmar=data)
 
 if __name__ == "__main__":
     app.run(port=4000, debug=True, use_reloader=True)
