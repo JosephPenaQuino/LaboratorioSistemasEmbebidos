@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_mysqldb import MySQL
 from werkzeug.datastructures import ImmutableDict
 import settings
+from dao.DAOPrestamo import DAOPrestamo
 
 app = Flask(__name__)
 
@@ -61,7 +62,8 @@ def acceso():
                     if data[x][6]:
                         return render_template('lista-usuarios.html', usuarios = data)
                     else:
-                        return render_template('equipos.html', equipos = dataEquipos)
+                        print("User Id: {}".format(data[x][0]))
+                        return render_template('equipos.html', userId=data[x][0], equipos=dataEquipos)
                 else:
                     print("Contraseña Incorrecta")
             else:
@@ -91,7 +93,13 @@ def add_usuario():
         email = f'{user}@utec.edu.pe'
         print(user,password,nom,apell,admin)
         cur = mysql.connection.cursor()
-        cur.execute('insert usuarios(username,codigo,nombre,apellido,admin,email, telefono) values(%s,%s,%s,%s,%s, %s,%s)',(user,password,nom,apell,admin, email, telefono))
+        cur.execute('insert usuarios('
+                    'username,codigo,'
+                    'nombre,apellido,'
+                    'admin,email, telefono) '
+                    'values(%s,%s,%s,%s,%s,'
+                    '%s,%s)',(user,password,nom,
+                    apell,admin, email, telefono))
 
 
         mysql.connection.commit()
@@ -158,7 +166,8 @@ def add_equipo():
         img = request.form['imagen']
         print(nom,desc,stock,img)
         cur = mysql.connection.cursor()
-        cur.execute('insert componente(nombre,description,stock,image_url, total) values(%s,%s,%s,%s,%s)',(nom,desc,stock,img,total))
+        cur.execute('insert componente(nombre,description,stock,image_url, total)'
+                    'values(%s,%s,%s,%s,%s)',(nom,desc,stock,img,total))
         mysql.connection.commit()
         flash('Usuario actualizado correctamente')
         return redirect(url_for('listadoEquipos'))
@@ -196,6 +205,13 @@ def update_equipos(id):
         mysql.connection.commit()
         flash('Contacto actualizado correctamente')
         return redirect(url_for('listadoEquipos'))
+
+@app.route('/usuarioListaPrestamos/<userId>')
+def usuario_lista_prestamos(userId):
+    db = DAOPrestamo()
+    data = db.read(userId)
+    return render_template('usuarioListaPrestamos.html', prestamo_componente=data)
+
 
 if __name__ == "__main__":
     app.run(port=4000, debug=True, use_reloader=True)
