@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_mysqldb import MySQL
 from werkzeug.datastructures import ImmutableDict
 import settings
@@ -179,6 +179,61 @@ def update_equipos(id):
         mysql.connection.commit()
         flash('Contacto actualizado correctamente')
         return redirect(url_for('listadoEquipos'))
+
+
+@app.route('/addToCart/<id>')
+def addToCart(id):
+
+    cur = mysql.connection.cursor()
+
+    cur.execute("SELECT id FROM users WHERE username = '" + session['username'] + "'")
+    id_usuario = cur.fetchone()[0]
+    try:
+        cur.execute("INSERT INTO cart (id_usuarios, id_componente) VALUES (?, ?)", (id_usuario, id))
+        mysql.connection.commit()
+        msg = "Added successfully"
+    except:
+        mysql.connection.rollback()
+        msg = "Error occured"
+    mysql.connection.close()
+    return redirect(url_for('root'))
+
+# @app.route("/cart")
+# def cart():
+#     if 'email' not in session:
+#         return redirect(url_for('loginForm'))
+#     loggedIn, firstName, noOfItems = getLoginDetails()
+#     email = session['email']
+#     with sqlite3.connect('database.db') as conn:
+#         cur = conn.cursor()
+#         cur.execute("SELECT userId FROM users WHERE email = '" + email + "'")
+#         userId = cur.fetchone()[0]
+#         cur.execute("SELECT products.productId, products.name, products.price, products.image FROM products, kart WHERE products.productId = kart.productId AND kart.userId = " + str(userId))
+#         products = cur.fetchall()
+#     totalPrice = 0
+#     for row in products:
+#         totalPrice += row[2]
+#     return render_template("cart.html", products = products, totalPrice=totalPrice, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems)
+#
+# @app.route("/removeFromCart")
+# def removeFromCart():
+#     if 'email' not in session:
+#         return redirect(url_for('loginForm'))
+#     email = session['email']
+#     productId = int(request.args.get('productId'))
+#     with sqlite3.connect('database.db') as conn:
+#         cur = conn.cursor()
+#         cur.execute("SELECT userId FROM users WHERE email = '" + email + "'")
+#         userId = cur.fetchone()[0]
+#         try:
+#             cur.execute("DELETE FROM kart WHERE userId = " + str(userId) + " AND productId = " + str(productId))
+#             conn.commit()
+#             msg = "removed successfully"
+#         except:
+#             conn.rollback()
+#             msg = "error occured"
+#     conn.close()
+#     return redirect(url_for('root'))
 
 if __name__ == "__main__":
     app.run(port=4000, debug=True, use_reloader=True)
