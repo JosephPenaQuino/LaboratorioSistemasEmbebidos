@@ -1,0 +1,4 @@
+MYSQL_HOST = 'remotemysql.com'
+MYSQL_USER = 'y3hzXIMmEO'
+MYSQL_PASSWORD = 'Wx3JoZvWEE'
+MYSQL_DB = 'y3hzXIMmEO'

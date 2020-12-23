@@ -135,14 +135,15 @@ def update_usuario(id):
         telefono = request.form['telefono']
         admin = request.form['rol']
         cur = mysql.connection.cursor()
-        cur.execute((" update usuarios" 
-                    "set username = %s,"
-                    "codigo = %s,"
-                    "nombre = %s,"
-                    "apellido = %s,"
-                    "telefono = %s,"
-                    "admin = %s"
-                    " where id = %s ")
+        cur.execute("""
+                update usuarios  
+                set username = %s,
+                    codigo = %s,
+                    nombre = %s,
+                    apellido = %s,
+                    telefono = %s,
+                    admin = %s
+                     where id = %s """
                     ,(user, password, nom, apell, telefono, admin, id))
         mysql.connection.commit()
         flash('Contacto actualizado correctamente')
