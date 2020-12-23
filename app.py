@@ -266,8 +266,11 @@ def payment():
         "SELECT componente.id, componente.nombre, componente.stock, componente.image_url FROM componente, cart WHERE componente.id = cart.id_componente AND cart.id_usuario = " + str(
             userId))
     products = cur.fetchall()
+    cur.execute("SELECT componente.id FROM componente, cart WHERE componente.id = cart.id_componente AND cart.id_usuario = " + str(userId))
+    reduc = cur.fetchall()
+    for i in range(len(reduc)-1):
+        cur.execute("UPDATE componente SET stock = stock -1 WHERE componente.id = %s", reduc[i])
 
-    cur.execute("DELETE FROM cart WHERE id = " + str(userId))
     mysql.connection.commit()
 
     return render_template("checkout.html", products=products,usuario = session['username'])
