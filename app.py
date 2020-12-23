@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, escape, request, redirect, url_for, flash, session
 from flask_mysqldb import MySQL
 from werkzeug.datastructures import ImmutableDict
 import settings
 from dao.DAOPrestamo import DAOPrestamo
+from dao.DAOCart import DAOCart
 
 app = Flask(__name__)
 
@@ -60,6 +61,7 @@ def acceso():
                 print("Usuarios iguales")
                 if data[x][2] == password:
                     print("Ingreso Exitoso")
+                    session['userId'] = data[x][0]
                     if data[x][6]:
                         return render_template('lista-usuarios.html', usuarios = data)
                     else:
@@ -276,43 +278,61 @@ def payment():
     return render_template("checkout.html", products=products,usuario = session['username'])
 
 
-@app.route('/usuarioListaPrestamos/<userId>')
-def usuario_lista_prestamos(userId):
+@app.route('/usuarioListaPrestamos')
+def usuario_lista_prestamos():
     db = DAOPrestamo()
-    data = db.read(userId)
-    print("======================================")
-    print("Data: ")
-    print(data)
+    data = db.read(session['userId'])
     return render_template('usuarioListaPrestamos.html', prestamo_componente=data)
 
-@app.route('/devolverComponente/<prestamoId>')
-def devolverComponente(prestamoId):
-    db = DAOPrestamo()
-    db.returnComponent(prestamoId)
-    userId = db.getUserId(prestamoId)
-    #data = db.read(userId)
-    #return render_template('usuarioListaPrestamos.html', prestamo_componente=data)
-    return usuario_lista_prestamos(userId)
+@app.route('/devolverComponente', methods=['POST'])
+def devolverComponente():
+    if request.method == 'POST':
+        prestamoId = request.form['prestamoId']
+        db = DAOPrestamo()
+        db.returnComponent(prestamoId)
+        userId = db.getUserId(prestamoId)
+        return redirect('/usuarioListaPrestamos')
 
 @app.route('/lista-porConfirmar')
 def admin_lista_prestamosConfirmar():
+    print("UserId: {}".format(session["userId"]))
     db = DAOPrestamo()
     data = db.getPrestamosPorConfirmar()
     return render_template('listaPorConfirmar.html', prestamo_por_confirmar=data)
 
-@app.route('/confirmarDevolucion/<prestamoId>')
-def confirmar_devolucion(prestamoId):
-    db = DAOPrestamo()
-    db.confirmarDevolucion(prestamoId)
-    data = db.getPrestamosPorConfirmar()
-    return render_template('listaPorConfirmar.html', prestamo_por_confirmar=data)
+@app.route('/confirmarDevolucion', methods=['POST'])
+def confirmar_devolucion():
+    if request.method == 'POST':
+        prestamoId = request.form['prestamoId']
+        db = DAOPrestamo()
+        db.confirmarDevolucion(prestamoId)
+        data = db.getPrestamosPorConfirmar()
+        return redirect('lista-porConfirmar')
+        #return render_template('listaPorConfirmar.html', prestamo_por_confirmar=data)
 
-@app.route('/negarDevolucion/<prestamoId>')
-def negar_devolucion(prestamoId):
-    db = DAOPrestamo()
-    db.negarDevolucion(prestamoId)
-    data = db.getPrestamosPorConfirmar()
-    return render_template('listaPorConfirmar.html', prestamo_por_confirmar=data)
+@app.route('/negarDevolucion', methods=['POST'])
+def negar_devolucion():
+    if request.method == 'POST':
+        prestamoId = request.form['prestamoId']
+        db = DAOPrestamo()
+        db.negarDevolucion(prestamoId)
+        data = db.getPrestamosPorConfirmar()
+        return redirect('lista-porConfirmar')
+        #return render_template('listaPorConfirmar.html', prestamo_por_confirmar=data)
+
+@app.route('/checkoutPorConfirmar')
+def checkout_por_confirmar():
+    db = DAOCart()
+    data = db.getUsers()
+    return render_template('checkoutPorConfirmar.html', usuarios=data)
+
+@app.route('/confirmarCheckoutUsuario', methods=['POST'])
+def confirmar_checkout_usuario():
+    if request.method == 'POST':
+        userId = request.form['userId']
+        db = DAOCart()
+        data = db.getComponentesFromUser()
+        return render_template('checkoutPorConfirmar.html', usuarios=data)
 
 if __name__ == "__main__":
     app.run(port=4000, debug=True, use_reloader=True)

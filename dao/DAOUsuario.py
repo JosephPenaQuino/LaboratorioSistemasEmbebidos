@@ -1,16 +1,34 @@
 import pymysql
+import settings
 
 class DAOUsuario:
-    def __init__(self, localhost, user, password, database):
-        self.localhost = localhost
-        self.user = user
-        self.password = password
-        self.database = database
-        self.table = "usuarios"
-
     def _connect(self):
-        return pymysql.connect(self.localhost, self.user, self.password, self.database)
+        host = settings.MYSQL_HOST
+        user = settings.MYSQL_USER
+        password = settings.MYSQL_PASSWORD 
+        db = settings.MYSQL_DB 
+        return pymysql.connect(host, user, password, db)
     
+    def readUsingIdList(self, usersId):
+        con  = self._connect()
+        cursor = con.cursor()
+
+        try:
+            if not usersId:
+                return []
+            sql = "SELECT * FROM usuarios WHERE "
+            for userId in usersId:
+                sql = sql + "id=" + userId + " OR "
+            sql = sql[:-4]
+            print(sql) 
+            cursor.execute(sql)
+            data = cursor.fetchall()
+            return data 
+        except:
+            return
+        finally:
+            con.close()
+
     def read(self, id):
         con  = self._connect()
         cursor = con.cursor()
