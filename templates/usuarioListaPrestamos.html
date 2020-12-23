@@ -26,7 +26,12 @@
                     <td>{{c.6}}</td>
                     <td><img src="{{c.7}}" style="width: 100px;"></td>
                     <td>
-                        <a href="/devolverComponente/{{c.0}}" class="btn btn-secondary">Devolver</a>
+						<form action="devolverComponente" method="post">
+							<input type="hidden" name="prestamoId" value={{c.0}}></input>
+							<input class="btn btn-secondary" type="submit" name="upvote" value="Devolver" />
+						</form>
+						
+						<!--    <a href="/devolverComponente/{{c.0}}" class="btn btn-secondary">Devolver</a>-->
                     </td>
                 </tr>
                 {% endfor %}

@@ -265,21 +265,17 @@ def addToCart(id):
 @app.route('/usuarioListaPrestamos')
 def usuario_lista_prestamos():
     db = DAOPrestamo()
-    print("======================================")
-    print("The usedId is {}".format(session['userId']))
     data = db.read(session['userId'])
-    print("Data: ")
-    print(data)
     return render_template('usuarioListaPrestamos.html', prestamo_componente=data)
 
-@app.route('/devolverComponente/<prestamoId>')
-def devolverComponente(prestamoId):
-    db = DAOPrestamo()
-    db.returnComponent(prestamoId)
-    userId = db.getUserId(prestamoId)
-    #data = db.read(userId)
-    #return render_template('usuarioListaPrestamos.html', prestamo_componente=data)
-    return usuario_lista_prestamos(userId)
+@app.route('/devolverComponente', methods=['POST'])
+def devolverComponente():
+    if request.method == 'POST':
+        prestamoId = request.form['prestamoId']
+        db = DAOPrestamo()
+        db.returnComponent(prestamoId)
+        userId = db.getUserId(prestamoId)
+        return redirect('/usuarioListaPrestamos')
 
 @app.route('/lista-porConfirmar')
 def admin_lista_prestamosConfirmar():
