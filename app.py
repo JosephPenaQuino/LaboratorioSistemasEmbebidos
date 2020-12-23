@@ -3,6 +3,7 @@ from flask_mysqldb import MySQL
 from werkzeug.datastructures import ImmutableDict
 import settings
 from dao.DAOPrestamo import DAOPrestamo
+from dao.DAOCart import DAOCart
 
 app = Flask(__name__)
 
@@ -320,6 +321,20 @@ def negar_devolucion():
         data = db.getPrestamosPorConfirmar()
         return redirect('lista-porConfirmar')
         #return render_template('listaPorConfirmar.html', prestamo_por_confirmar=data)
+
+@app.route('/checkoutPorConfirmar')
+def checkout_por_confirmar():
+    db = DAOCart()
+    data = db.getUsers()
+    return render_template('checkoutPorConfirmar.html', usuarios=data)
+
+@app.route('/confirmarCheckoutUsuario', methods=['POST'])
+def confirmar_checkout_usuario():
+    if request.method == 'POST':
+        userId = request.form['userId']
+        db = DAOCart()
+        data = db.getComponentesFromUser()
+        return render_template('checkoutPorConfirmar.html', usuarios=data)
 
 if __name__ == "__main__":
     app.run(port=4000, debug=True, use_reloader=True)
