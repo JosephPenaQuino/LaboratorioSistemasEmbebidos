@@ -23,7 +23,6 @@ def index():
     cursor =  mysql.connection.cursor()
     cursor.execute('select * from usuarios')
     data = cursor.fetchall()
-    session['userId'] = data[0][0]
     return render_template('index.html',contactos=data)
     #return 'Index - Diseño de software'
 
@@ -60,6 +59,7 @@ def acceso():
                 print("Usuarios iguales")
                 if data[x][2] == password:
                     print("Ingreso Exitoso")
+                    session['userId'] = data[x][0]
                     if data[x][6]:
                         return render_template('lista-usuarios.html', usuarios = data)
                     else:
@@ -279,6 +279,7 @@ def devolverComponente():
 
 @app.route('/lista-porConfirmar')
 def admin_lista_prestamosConfirmar():
+    print("UserId: {}".format(session["userId"]))
     db = DAOPrestamo()
     data = db.getPrestamosPorConfirmar()
     return render_template('listaPorConfirmar.html', prestamo_por_confirmar=data)
