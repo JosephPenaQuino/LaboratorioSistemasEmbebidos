@@ -283,19 +283,25 @@ def admin_lista_prestamosConfirmar():
     data = db.getPrestamosPorConfirmar()
     return render_template('listaPorConfirmar.html', prestamo_por_confirmar=data)
 
-@app.route('/confirmarDevolucion/<prestamoId>')
-def confirmar_devolucion(prestamoId):
-    db = DAOPrestamo()
-    db.confirmarDevolucion(prestamoId)
-    data = db.getPrestamosPorConfirmar()
-    return render_template('listaPorConfirmar.html', prestamo_por_confirmar=data)
+@app.route('/confirmarDevolucion', methods=['POST'])
+def confirmar_devolucion():
+    if request.method == 'POST':
+        prestamoId = request.form['prestamoId']
+        db = DAOPrestamo()
+        db.confirmarDevolucion(prestamoId)
+        data = db.getPrestamosPorConfirmar()
+        return redirect('lista-porConfirmar')
+        #return render_template('listaPorConfirmar.html', prestamo_por_confirmar=data)
 
-@app.route('/negarDevolucion/<prestamoId>')
-def negar_devolucion(prestamoId):
-    db = DAOPrestamo()
-    db.negarDevolucion(prestamoId)
-    data = db.getPrestamosPorConfirmar()
-    return render_template('listaPorConfirmar.html', prestamo_por_confirmar=data)
+@app.route('/negarDevolucion', methods=['POST'])
+def negar_devolucion():
+    if request.method == 'POST':
+        prestamoId = request.form['prestamoId']
+        db = DAOPrestamo()
+        db.negarDevolucion(prestamoId)
+        data = db.getPrestamosPorConfirmar()
+        return redirect('lista-porConfirmar')
+        #return render_template('listaPorConfirmar.html', prestamo_por_confirmar=data)
 
 if __name__ == "__main__":
     app.run(port=4000, debug=True, use_reloader=True)

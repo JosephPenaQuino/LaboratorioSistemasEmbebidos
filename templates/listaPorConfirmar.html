@@ -26,8 +26,14 @@
                     <td>{{c.6}}</td>
                     <td><img src="{{c.7}}" style="width: 100px;"></td>
                     <td>
-                        <a href="/confirmarDevolucion/{{c.0}}" class="btn btn-secondary">Confirmar</a>
-                        <a href="/negarDevolucion/{{c.0}}" class="btn btn-secondary">Negar</a>
+						<form action="confirmarDevolucion" method="post">
+							<input type="hidden" name="prestamoId" value={{c.0}}></input>
+							<input class="btn btn-secondary" type="submit" value="Confirmar" />
+						</form>
+						<form action="negarDevolucion" method="post">
+							<input type="hidden" name="prestamoId" value={{c.0}}></input>
+							<input class="btn btn-secondary" type="submit" value="Negar" />
+						</form>
                     </td>
                 </tr>
                 {% endfor %}
