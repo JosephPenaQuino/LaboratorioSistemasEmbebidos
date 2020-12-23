@@ -238,6 +238,7 @@ def cart():
     cur.execute("SELECT componente.id, componente.nombre, componente.stock, componente.image_url FROM componente, cart WHERE componente.id = cart.id_componente AND cart.id_usuario = " + str(userId))
     products = cur.fetchall()
 
+
     return render_template("cart.html", products = products, usuario = session['username'])
 
 @app.route("/removeFromCart")
@@ -270,7 +271,7 @@ def payment():
     products = cur.fetchall()
     cur.execute("SELECT componente.id FROM componente, cart WHERE componente.id = cart.id_componente AND cart.id_usuario = " + str(userId))
     reduc = cur.fetchall()
-
+    cur.execute("DELETE FROM cart")
     for i, tuple in enumerate(reduc):
         dni = tuple[0]
 
@@ -336,6 +337,34 @@ def confirmar_checkout_usuario():
         db = DAOCart()
         data = db.getComponentesFromUser()
         return render_template('checkoutPorConfirmar.html', usuarios=data)
+
+
+@app.route("/filtrop")
+def filtrosp():
+    cur = mysql.connection.cursor()
+    id_key = 2
+    cur.execute("SELECT * FROM componente, componentekeywords WHERE componente.id = componentekeywords.id_componente AND componentekeywords.id_keyword= "+str(id_key))
+    products = cur.fetchall()
+
+    return render_template("equipos.html", equipos = products, usuario = session['username'])
+
+@app.route("/filtroc")
+def filtrosc():
+    cur = mysql.connection.cursor()
+    id_key = 0
+    cur.execute("SELECT * FROM componente, componentekeywords WHERE componente.id = componentekeywords.id_componente AND componentekeywords.id_keyword= "+str(id_key))
+    products = cur.fetchall()
+
+    return render_template("equipos.html", equipos = products, usuario = session['username'])
+
+@app.route("/filtrom")
+def filtrosm():
+    cur = mysql.connection.cursor()
+    id_key = 1
+    cur.execute("SELECT * FROM componente, componentekeywords WHERE componente.id = componentekeywords.id_componente AND componentekeywords.id_keyword= "+str(id_key))
+    products = cur.fetchall()
+
+    return render_template("equipos.html", equipos = products, usuario = session['username'])
 
 if __name__ == "__main__":
     app.run(port=4000, debug=True, use_reloader=True)
