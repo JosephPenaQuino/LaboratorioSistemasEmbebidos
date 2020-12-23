@@ -31,7 +31,7 @@ def inicio():
     cursor =  mysql.connection.cursor()
     cursor.execute('select * from componente')
     data = cursor.fetchall()
-    return render_template('equipos.html',equipos = data)
+    return render_template('equipos.html',equipos = data, usuario = session['username'])
     #return 'Index - Diseño de software'
     
 
