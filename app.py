@@ -46,16 +46,17 @@ def acceso():
     dataEquipos = cursorEquipos.fetchall()
 
     if request.method == 'POST':
-        user = request.form['usuario']
+        session['username'] = request.form['usuario']
+        username = session['username']
         password = int(request.form['contraseña'])
-        print("Usuario: %s" % user)
+        print("Usuario: %s" % username)
         print("Contraseña: %s" % password)
         for x in range(len(data)):
             print ("data[%d][1]: %s" % (x, data[x][1]))
             print ("data[%d][2]: %s" % (x, data[x][2]))
             print(type(password))
             print(type(data[x][2]))
-            if data[x][1] == user:
+            if data[x][1] == username:
                 print("Usuarios iguales")
                 if data[x][2] == password:
                     print("Ingreso Exitoso")
@@ -64,7 +65,7 @@ def acceso():
                         return render_template('lista-usuarios.html', usuarios = data)
                     else:
                         print("User Id: {}".format(data[x][0]))
-                        return render_template('equipos.html', userId=data[x][0], equipos=dataEquipos)
+                        return render_template('equipos.html', userId=data[x][0], equipos=dataEquipos,usuario = session['username'])
                 else:
                     print("Contraseña Incorrecta")
             else:
@@ -208,59 +209,75 @@ def update_equipos(id):
         return redirect(url_for('listadoEquipos'))
 
 
-@app.route('/addToCart/<id>')
-def addToCart(id):
-
+@app.route('/addToCart')
+def addToCart():
+    id_componente = int(request.args.get('productId'))
     cur = mysql.connection.cursor()
-
-    cur.execute("SELECT id FROM users WHERE username = '" + session['username'] + "'")
+    print(id_componente)
+    cur.execute("SELECT id FROM usuarios WHERE username = '" + session['username'] + "'")
     id_usuario = cur.fetchone()[0]
+    print(id_usuario)
+
     try:
-        cur.execute("INSERT INTO cart (id_usuarios, id_componente) VALUES (?, ?)", (id_usuario, id))
+        cur.execute("INSERT INTO cart (id_usuario, id_componente) VALUES (%s, %s)", (str(id_usuario), str(id_componente)))
         mysql.connection.commit()
         msg = "Added successfully"
     except:
         mysql.connection.rollback()
         msg = "Error occured"
     mysql.connection.close()
-    return redirect(url_for('root'))
+    return redirect(url_for('inicio'))
 
-# @app.route("/cart")
-# def cart():
-#     if 'email' not in session:
-#         return redirect(url_for('loginForm'))
-#     loggedIn, firstName, noOfItems = getLoginDetails()
-#     email = session['email']
-#     with sqlite3.connect('database.db') as conn:
-#         cur = conn.cursor()
-#         cur.execute("SELECT userId FROM users WHERE email = '" + email + "'")
-#         userId = cur.fetchone()[0]
-#         cur.execute("SELECT products.productId, products.name, products.price, products.image FROM products, kart WHERE products.productId = kart.productId AND kart.userId = " + str(userId))
-#         products = cur.fetchall()
-#     totalPrice = 0
-#     for row in products:
-#         totalPrice += row[2]
-#     return render_template("cart.html", products = products, totalPrice=totalPrice, loggedIn=loggedIn, firstName=firstName, noOfItems=noOfItems)
-#
-# @app.route("/removeFromCart")
-# def removeFromCart():
-#     if 'email' not in session:
-#         return redirect(url_for('loginForm'))
-#     email = session['email']
-#     productId = int(request.args.get('productId'))
-#     with sqlite3.connect('database.db') as conn:
-#         cur = conn.cursor()
-#         cur.execute("SELECT userId FROM users WHERE email = '" + email + "'")
-#         userId = cur.fetchone()[0]
-#         try:
-#             cur.execute("DELETE FROM kart WHERE userId = " + str(userId) + " AND productId = " + str(productId))
-#             conn.commit()
-#             msg = "removed successfully"
-#         except:
-#             conn.rollback()
-#             msg = "error occured"
-#     conn.close()
-#     return redirect(url_for('root'))
+@app.route("/cart")
+def cart():
+
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT id FROM usuarios WHERE username = '" + session['username'] + "'")
+    userId = cur.fetchone()[0]
+    cur.execute("SELECT componente.id, componente.nombre, componente.stock, componente.image_url FROM componente, cart WHERE componente.id = cart.id_componente AND cart.id_usuario = " + str(userId))
+    products = cur.fetchall()
+
+    return render_template("cart.html", products = products, usuario = session['username'])
+
+@app.route("/removeFromCart")
+def removeFromCart():
+
+    productId = int(request.args.get('productId'))
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT id FROM usuarios WHERE username = '" + session['username'] +  "'")
+    userId = cur.fetchone()[0]
+    try:
+        cur.execute("DELETE FROM cart WHERE id_usuario = " + str(userId) + " AND id_componente = " + str(productId))
+        mysql.connection.commit()
+        msg = "removed successfully"
+    except:
+        mysql.connection.rollback()
+        msg = "error occured"
+    mysql.connection.close()
+    return redirect(url_for('inicio'))
+
+
+@app.route("/checkout", methods=['GET', 'POST'])
+def payment():
+
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT id FROM usuarios WHERE username = '" + session['username'] + "'")
+    userId = cur.fetchone()[0]
+    cur.execute(
+        "SELECT componente.id, componente.nombre, componente.stock, componente.image_url FROM componente, kart WHERE products.productId = kart.productId AND kart.userId = " + str(
+            userId))
+    products = cur.fetchall()
+    totalPrice = 0
+    for row in products:
+        totalPrice += row[2]
+        print(row)
+        cur.execute("INSERT INTO Orders (userId, productId) VALUES (?, ?)", (userId, row[0]))
+    cur.execute("DELETE FROM kart WHERE userId = " + str(userId))
+    mysql.connection.commit()
+
+    return render_template("checkout.html", products=products, totalPrice=totalPrice, loggedIn=loggedIn,
+                           firstName=firstName, noOfItems=noOfItems)
+
 
 @app.route('/usuarioListaPrestamos')
 def usuario_lista_prestamos():
