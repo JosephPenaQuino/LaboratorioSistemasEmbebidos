@@ -1,0 +1,31 @@
+{% extends 'layout.html' %}
+{% block body %}
+
+<div id="cartItems">
+
+	<h2>Carrito</h2>
+	<div id="tableItems">
+		{% for row in products %}
+		<div>
+			<hr id="seperator">
+			<div id="itemImage">
+				<img class="card-img-s" src={{row[3]}} width="300" height="300">
+			</div>
+			<div id="itemName">
+				<span id="itemNameTag">{{row[1]}}</span>
+				<a href="/removeFromCart?productId={{row[0]}}">Borrar</a>
+			</div>
+
+		</div>
+
+		<hr id="seperator">
+		<div id="total">
+			<span id="subtotal">Hay en stock</span> : {{row[2]}}
+		</div>
+		{% endfor %}
+	</div>
+</div>
+<a href="/checkout">Checkout</a>
+
+
+{% endblock %}
