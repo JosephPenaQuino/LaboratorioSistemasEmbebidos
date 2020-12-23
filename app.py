@@ -270,8 +270,11 @@ def payment():
     products = cur.fetchall()
     cur.execute("SELECT componente.id FROM componente, cart WHERE componente.id = cart.id_componente AND cart.id_usuario = " + str(userId))
     reduc = cur.fetchall()
-    for i in range(len(reduc)-1):
-        cur.execute("UPDATE componente SET stock = stock -1 WHERE componente.id = %s", reduc[i])
+
+    for i, tuple in enumerate(reduc):
+        dni = tuple[0]
+
+        cur.execute("UPDATE componente SET stock = stock -1 WHERE componente.id = " + str(dni))
 
     mysql.connection.commit()
 
