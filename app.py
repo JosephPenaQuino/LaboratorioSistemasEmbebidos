@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, escape, request, redirect, url_for, flash, session
 from flask_mysqldb import MySQL
 from werkzeug.datastructures import ImmutableDict
 import settings
@@ -23,6 +23,7 @@ def index():
     cursor =  mysql.connection.cursor()
     cursor.execute('select * from usuarios')
     data = cursor.fetchall()
+    session['userId'] = data[0][0]
     return render_template('index.html',contactos=data)
     #return 'Index - Diseño de software'
 
@@ -261,11 +262,12 @@ def addToCart(id):
 #     conn.close()
 #     return redirect(url_for('root'))
 
-@app.route('/usuarioListaPrestamos/<userId>')
-def usuario_lista_prestamos(userId):
+@app.route('/usuarioListaPrestamos')
+def usuario_lista_prestamos():
     db = DAOPrestamo()
-    data = db.read(userId)
     print("======================================")
+    print("The usedId is {}".format(session['userId']))
+    data = db.read(session['userId'])
     print("Data: ")
     print(data)
     return render_template('usuarioListaPrestamos.html', prestamo_componente=data)
