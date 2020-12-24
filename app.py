@@ -32,7 +32,7 @@ def inicio():
     cursor =  mysql.connection.cursor()
     cursor.execute('select * from componente')
     data = cursor.fetchall()
-    return render_template('equipos.html',equipos = data)
+    return render_template('equipos.html',equipos = data, usuario = session['username'])
     #return 'Index - Diseño de software'
     
 
@@ -135,14 +135,15 @@ def update_usuario(id):
         telefono = request.form['telefono']
         admin = request.form['rol']
         cur = mysql.connection.cursor()
-        cur.execute((" update usuarios" 
-                    "set username = %s,"
-                    "codigo = %s,"
-                    "nombre = %s,"
-                    "apellido = %s,"
-                    "telefono = %s,"
-                    "admin = %s"
-                    " where id = %s ")
+        cur.execute("""
+                update usuarios  
+                set username = %s,
+                    codigo = %s,
+                    nombre = %s,
+                    apellido = %s,
+                    telefono = %s,
+                    admin = %s
+                     where id = %s """
                     ,(user, password, nom, apell, telefono, admin, id))
         mysql.connection.commit()
         flash('Contacto actualizado correctamente')
@@ -238,6 +239,7 @@ def cart():
     cur.execute("SELECT componente.id, componente.nombre, componente.stock, componente.image_url FROM componente, cart WHERE componente.id = cart.id_componente AND cart.id_usuario = " + str(userId))
     products = cur.fetchall()
 
+
     return render_template("cart.html", products = products, usuario = session['username'])
 
 @app.route("/removeFromCart")
@@ -270,8 +272,11 @@ def payment():
     products = cur.fetchall()
     cur.execute("SELECT componente.id FROM componente, cart WHERE componente.id = cart.id_componente AND cart.id_usuario = " + str(userId))
     reduc = cur.fetchall()
-    for i in range(len(reduc)-1):
-        cur.execute("UPDATE componente SET stock = stock -1 WHERE componente.id = %s", reduc[i])
+    cur.execute("DELETE FROM cart")
+    for i, tuple in enumerate(reduc):
+        dni = tuple[0]
+
+        cur.execute("UPDATE componente SET stock = stock -1 WHERE componente.id = " + str(dni))
 
     mysql.connection.commit()
 
@@ -343,6 +348,34 @@ def confirmar_checkout():
         db = DAOPrestamo()
         db.confirmCheckout(userId)
         return redirect('checkoutPorConfirmar') 
+
+
+@app.route("/filtrop")
+def filtrosp():
+    cur = mysql.connection.cursor()
+    id_key = 2
+    cur.execute("SELECT * FROM componente, componentekeywords WHERE componente.id = componentekeywords.id_componente AND componentekeywords.id_keyword= "+str(id_key))
+    products = cur.fetchall()
+
+    return render_template("equipos.html", equipos = products, usuario = session['username'])
+
+@app.route("/filtroc")
+def filtrosc():
+    cur = mysql.connection.cursor()
+    id_key = 0
+    cur.execute("SELECT * FROM componente, componentekeywords WHERE componente.id = componentekeywords.id_componente AND componentekeywords.id_keyword= "+str(id_key))
+    products = cur.fetchall()
+
+    return render_template("equipos.html", equipos = products, usuario = session['username'])
+
+@app.route("/filtrom")
+def filtrosm():
+    cur = mysql.connection.cursor()
+    id_key = 1
+    cur.execute("SELECT * FROM componente, componentekeywords WHERE componente.id = componentekeywords.id_componente AND componentekeywords.id_keyword= "+str(id_key))
+    products = cur.fetchall()
+
+    return render_template("equipos.html", equipos = products, usuario = session['username'])
 
 if __name__ == "__main__":
     app.run(port=4000, debug=True, use_reloader=True)
