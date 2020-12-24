@@ -1,6 +1,8 @@
 import pymysql
 import settings
 from dao.DAOComponente import DAOComponente
+from dao.DAOCart import DAOCart
+from datetime import datetime 
 
 class DAOPrestamo:
     def __init__(self):
@@ -44,6 +46,42 @@ class DAOPrestamo:
             return
         finally:
             con.close()
+
+    def createPrestamo(self, componenteId, userId):
+        con = DAOPrestamo.connect(self)
+        cur = con.cursor()
+        datenow = datetime.now().strftime('%Y-%m-%d')
+        try:
+            #sql =f"INSERT INTO prestamo(Fecha_inicio, id_usuario, id_componente,cantidad,Fecha_entrega) VALUES('{datenow}','{userId}','{componenteId}',1,'{datenow}')" 
+            #print(sql)
+            #cur.execute(sql)
+            cur.execute("INSERT INTO prestamo(Fecha_inicio, id_usuario, id_componente,cantidad,Fecha_entrega) VALUES(%s,%s,%s,%s,%s)", (datenow,userId, componenteId,1, datenow)) 
+            con.commit()
+        except Exception as e:
+            print("createPrestamo error")
+            print("Exception occured in DAOPrestamo:{}".format(e))
+            return
+        finally:
+            con.close()
+
+    def confirmCheckout(self, userId):
+        db = DAOCart()
+        componentesId = db.getComponentesFromUser(userId)
+
+        for c in componentesId:
+            self.createPrestamo(c[0], userId)
+        
+        con = DAOPrestamo.connect(self)
+        cur = con.cursor()
+        try:
+            cur.execute("DELETE FROM cart WHERE id_usuario=%s",(userId))
+            con.commit()
+        except Exception as e:
+            print("Exception occured in DAOPrestamo:{}".format(e))
+            return
+        finally:
+            con.close()
+
 
     def confirmarDevolucion(self, prestamoId):
         con = DAOPrestamo.connect(self)

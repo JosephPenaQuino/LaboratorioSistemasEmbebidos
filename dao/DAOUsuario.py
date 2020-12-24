@@ -18,9 +18,8 @@ class DAOUsuario:
                 return []
             sql = "SELECT * FROM usuarios WHERE "
             for userId in usersId:
-                sql = sql + "id=" + userId + " OR "
+                sql = sql + "id=" + str(userId) + " OR "
             sql = sql[:-4]
-            print(sql) 
             cursor.execute(sql)
             data = cursor.fetchall()
             return data 

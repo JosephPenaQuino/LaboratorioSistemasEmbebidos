@@ -1,0 +1,37 @@
+{% extends 'layout_admin.html' %} {% block body %}
+
+<h1>Estos son los prestamos que debes confirmar</h1>
+
+<div class="row">
+    <div class="col-md-9">
+        <table class="table table-striped table-bordered bg-white table-sm table-hover">
+            <thead>
+				<td>Nombre</td>
+				<td>Marca</td>
+				<td>Modelo</td>
+				<td>Cantidad</td>
+				<td>Fecha de prestamo</td>
+				<td>Fecha de devolución</td>
+				<td>Imagen</td>
+            </thead>
+            <tbody>
+                {% for c in componentes %}
+                <tr>
+                    <td>{{c.1}}</td>
+                    <td>{{c.2}}</td>
+                    <td>{{c.3}}</td>
+                    <td>{{c.4}}</td>
+                    <td>{{c.5}}</td>
+                    <td>{{c.6}}</td>
+                    <td><img src="{{c.7}}" style="width: 100px;"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+			<form action="confirmarCheckout" method="post">
+				<input type="hidden" name="userId" value={{userId}}></input>
+				<input class="btn btn-secondary" type="submit" value="Confirmar" />
+			</form>
+    </div>
+</div>
+{% endblock %}

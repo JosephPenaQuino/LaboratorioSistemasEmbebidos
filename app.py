@@ -324,6 +324,8 @@ def negar_devolucion():
 def checkout_por_confirmar():
     db = DAOCart()
     data = db.getUsers()
+    if not data:
+        data = []
     return render_template('checkoutPorConfirmar.html', usuarios=data)
 
 @app.route('/confirmarCheckoutUsuario', methods=['POST'])
@@ -331,8 +333,16 @@ def confirmar_checkout_usuario():
     if request.method == 'POST':
         userId = request.form['userId']
         db = DAOCart()
-        data = db.getComponentesFromUser()
-        return render_template('checkoutPorConfirmar.html', usuarios=data)
+        data = db.getComponentesFromUser(userId)
+        return render_template('confirmarCheckoutUsuario.html', componentes=data, userId=userId)
+
+@app.route('/confirmarCheckout', methods=['POST'])
+def confirmar_checkout():
+    if request.method == 'POST':
+        userId = request.form['userId']
+        db = DAOPrestamo()
+        db.confirmCheckout(userId)
+        return redirect('checkoutPorConfirmar') 
 
 if __name__ == "__main__":
     app.run(port=4000, debug=True, use_reloader=True)
